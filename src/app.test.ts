@@ -1,6 +1,6 @@
 import request from "supertest";
-import { app } from "../src/app";
-import { User } from "../src/types/User";
+import { app } from "./app";
+import { User } from "./types/User";
 
 const port = parseInt(process.env.PORT ?? "3000");
 const host = `localhost:${port}`;
