@@ -15,6 +15,8 @@ export const app = async (port: number) => {
   server.listen(port, () => {
     console.info(`Server is listening on port ${port}`);
   });
+
+  return { exit: () => server.close() };
 };
 
 const router = async (
@@ -55,7 +57,7 @@ const parseJSONMiddlware = (
     data += chunk.toString();
   });
   req.on("end", () => {
-    const object = JSON.parse(data);
+    const object = data.length ? JSON.parse(data) : undefined;
     Object.defineProperty(req, "data", { value: object });
     next();
   });
@@ -105,6 +107,8 @@ const createUser = async (
     next();
     return;
   }
+  console.log({ usr: req.data });
+
   if (!isUser(req.data)) {
     sendError(res, 400, "Wrong user structure");
     return;

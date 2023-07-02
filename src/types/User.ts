@@ -10,10 +10,8 @@ export const isUser = (arg: User): arg is User => {
     arg &&
     !!arg.name &&
     typeof arg.name === "string" &&
-    !!arg.age &&
+    arg.age !== undefined &&
     typeof arg.age === "number" &&
-    !!arg.id &&
-    typeof arg.id === "string" &&
     Array.isArray(arg.hobbies) &&
     (!arg.hobbies.length || arg.hobbies.every((h) => typeof h === "string"))
   );
