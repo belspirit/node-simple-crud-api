@@ -6,7 +6,7 @@
   "author": "Sergey Labetik",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.14.0"
   },
   "type": "commonjs",
   "scripts": {
@@ -24,10 +24,17 @@
   },
   "homepage": "https://github.com/belspirit/node-simple-crud-api#readme",
   "devDependencies": {
+    "@types/uuid": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "ts-loader": "^9.4.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6",
     "webpack": "^5.88.1",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "uuid": "^9.0.0"
   }
 }
