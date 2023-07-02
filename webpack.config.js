@@ -1,8 +1,7 @@
 const path = require("path");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   devtool: "inline-source-map",
   entry: {
     main: "./src/index.ts",
@@ -13,13 +12,6 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
-    // fallback: {
-    //   cluster: false,
-    //   http: false,
-    //   os: false,
-    //   crypto: false,
-    //   path: false,
-    // },
   },
   module: {
     rules: [
@@ -29,8 +21,8 @@ module.exports = {
       },
     ],
   },
+  externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
   optimization: {
     minimize: true,
   },
-  plugins: [new NodePolyfillPlugin()],
 };
