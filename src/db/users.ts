@@ -4,6 +4,7 @@ import { uuidValidateV4 } from "../utils/util";
 import { DbOperation, DbRequest, DbResponse } from "./types";
 
 let users: User[] = [];
+const multi = JSON.parse(process.env.MULTI ?? "false");
 
 const isDbRequest = (message: DbRequest): message is DbRequest => {
   return (
@@ -27,7 +28,7 @@ const isDbResponse = (message: DbResponse): message is DbResponse => {
   );
 };
 
-if (cluster.isPrimary) {
+if (multi && cluster.isPrimary) {
   cluster.on("message", (worker, message: DbRequest, handle) => {
     if (!isDbRequest(message)) {
       return;
@@ -78,23 +79,40 @@ if (cluster.isPrimary) {
 }
 
 export const getAllUsers = async () => {
-  return performDbOperation<User[]>("getUsers");
+  if (multi) {
+    return performDbOperation<User[]>("getUsers");
+  }
+  return users;
 };
 
 export const getUser = async (id: string) => {
-  return performDbOperation<User>("getUser", id);
+  if (multi) {
+    return performDbOperation<User>("getUser", id);
+  }
+  return users.find((u) => u.id === id);
 };
 
 export const createUser = async (user: User) => {
-  return performDbOperation<User>("createUser", user);
+  if (multi) {
+    return performDbOperation<User>("createUser", user);
+  }
+  users = [...users, user];
+  return user;
 };
 
 export const updateUser = async (user: User) => {
-  return performDbOperation<User>("updateUser", user);
+  if (multi) {
+    return performDbOperation<User>("updateUser", user);
+  }
+  users = [...users.filter((value) => value.id !== user.id), user];
+  return user;
 };
 
 export const deleteUser = async (id: string) => {
-  return performDbOperation("deleteUser", id);
+  if (multi) {
+    return performDbOperation("deleteUser", id);
+  }
+  users = users.filter((value) => value.id !== id);
 };
 
 const performDbOperation = <User>(

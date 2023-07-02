@@ -3,13 +3,9 @@ import http from "http";
 import { availableParallelism } from "os";
 import { app } from "./app";
 import { sendError } from "./utils/util";
-import { config } from "dotenv";
 
-export default () => {
+export default (port: number) => {
   if (cluster.isPrimary) {
-    config();
-    const PORT = parseInt(process.env.PORT ?? "4000");
-
     process.on("uncaughtException", (error) => console.error(error.message));
 
     const workersCount = availableParallelism() - 1;
@@ -21,9 +17,9 @@ export default () => {
     const workerPorts: number[] = [];
 
     for (let i = 0; i < workersCount; i++) {
-      const workerPort = PORT + 1 + i;
+      const workerPort = port + 1 + i;
 
-      cluster.fork({ PORT: workerPort });
+      cluster.fork({ WORKER_PORT: workerPort });
       workerPorts.push(workerPort);
     }
 
@@ -33,13 +29,13 @@ export default () => {
       console.info(`Request ${req.method}: ${req.url} to Load Balancer`);
 
       nextServer = (nextServer % workersCount) + 1;
-      const port = 4000 + nextServer;
+      const workerPort = port + nextServer;
 
       try {
         const connector = http.request(
           {
             hostname: "localhost",
-            port: port,
+            port: workerPort,
             path: req.url,
             method: req.method,
             headers: req.headers,
@@ -59,7 +55,7 @@ export default () => {
           req.unpipe(connector);
         });
 
-        console.info(`Forward request to worker on port ${port}`);
+        console.info(`Forward request to worker on port ${workerPort}`);
 
         req.pipe(connector);
       } catch (error) {
@@ -75,12 +71,12 @@ export default () => {
       console.error(error.message);
     });
 
-    loadBalancer.listen(PORT, () => {
-      console.info(`Load Balancer is listening on port ${PORT}`);
+    loadBalancer.listen(port, () => {
+      console.info(`Load Balancer is listening on port ${port}`);
     });
   } else {
     // Worker instance
-    const port = parseInt(process.env.PORT ?? "4001");
-    app(port);
+    const childPort = parseInt(process.env.WORKER_PORT ?? "4001");
+    app(childPort);
   }
 };

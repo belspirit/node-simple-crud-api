@@ -8,6 +8,7 @@ import { sendError, sendResponse, uuidValidateV4 } from "./utils/util";
 
 export const app = async (port: number) => {
   const server = http.createServer((req, res) => {
+    console.info(`Request ${req.method}: ${req.url} to Server on port ${port}`);
     router(req, res);
   });
 
@@ -123,7 +124,10 @@ const updateUser = async (
     next();
     return;
   }
-
+  if (!isUser(req.data)) {
+    sendError(res, 400, "Wrong user structure");
+    return;
+  }
   const userId = req.url.substring(7);
   if (uuidValidateV4(userId)) {
     let user: any = await db.getUser(userId);
