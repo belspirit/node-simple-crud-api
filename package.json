@@ -10,8 +10,10 @@
   },
   "type": "commonjs",
   "scripts": {
-    "start:dev": "tsnd --respawn src/index.ts",
+    "start:dev": "cross-env MULTI=false tsnd --respawn src/index.ts",
+    "start:multi": "cross-env MULTI=true tsnd --respawn src/index.ts",
     "start:prod": "webpack && node build/main-bundle.js",
+    "start:prod:port-cross-env": "webpack && cross-env PORT=7000 node build/main-bundle.js",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,16 +27,17 @@
   "homepage": "https://github.com/belspirit/node-simple-crud-api#readme",
   "devDependencies": {
     "@types/uuid": "^9.0.2",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "ts-loader": "^9.4.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6",
     "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "cross-env": "^7.0.3",
     "uuid": "^9.0.0"
   }
 }
