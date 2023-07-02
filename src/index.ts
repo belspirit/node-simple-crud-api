@@ -1,7 +1,3 @@
-import { a } from "./a";
+import run from "./load-balancer";
 
-console.log(a);
-
-setTimeout(() => {
-  console.log("end");
-}, 5000);
+run();
